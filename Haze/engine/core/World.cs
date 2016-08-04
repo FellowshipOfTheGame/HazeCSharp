@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 
 namespace Haze
@@ -7,9 +7,9 @@ namespace Haze
     /// Base game class for every game.
     /// This can change based on game necessities and genre.
     /// </summary>
-    class Game
+    class World
     {
-        public Game(Scene scene)
+        public World(Scene scene)
         {
             SceneManager.SetScene(scene);
         }
@@ -25,7 +25,7 @@ namespace Haze
             set
             {
                 this.framesPerSecond = value;
-                this.targetDelay = Game.secondsToMilliseconds / framesPerSecond;
+                this.targetDelay = World.secondsToMilliseconds / framesPerSecond;
             }
         }
 
@@ -40,7 +40,7 @@ namespace Haze
         /// </summary>
         public void Start()
         {
-            double deltaTime = Game.milliToSeconds;
+            double deltaTime = World.milliToSeconds;
             double inverseTicksPerMilli = 1 / TimeSpan.TicksPerMillisecond;
             Scene scene;
 
@@ -51,7 +51,7 @@ namespace Haze
                 // Simple Update-Draw game loop
                 #region Game Loop
 
-                scene.Update(deltaTime * Game.milliToSeconds);
+                scene.Update(deltaTime * World.milliToSeconds);
                 scene.Draw();
 
                 #endregion
