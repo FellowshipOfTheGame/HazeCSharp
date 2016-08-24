@@ -1,18 +1,22 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Haze
+namespace Pong_Tutorial
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Mono : Game
+    public class Pong : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public Mono()
+        private Paddle paddle;
+        private Ball ball;
+        //private Texture2D paddle;
+
+        public Pong()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -27,6 +31,7 @@ namespace Haze
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            IsMouseVisible = true;
 
             base.Initialize();
         }
@@ -41,6 +46,9 @@ namespace Haze
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            paddle = new Paddle(Content.Load<Texture2D>("Pong_Pad"), Vector2.Zero, new Rectangle(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height));
+            ball = new Ball(Content.Load<Texture2D>("Ball"), Vector2.Zero);
+            ball.AttachTo(paddle);
         }
 
         /// <summary>
@@ -63,7 +71,8 @@ namespace Haze
                 Exit();
 
             // TODO: Add your update logic here
-
+            paddle.Update(gameTime);
+            ball.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -76,6 +85,11 @@ namespace Haze
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            paddle.Draw(spriteBatch);
+            ball.Draw(spriteBatch);
+            //spriteBatch.Draw(paddle, Vector2.Zero, Color.White);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }

@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 
-namespace Haze
+namespace Pong_Tutorial
 {
+#if WINDOWS || LINUX
     /// <summary>
     /// The main class.
     /// </summary>
@@ -13,8 +14,9 @@ namespace Haze
         [STAThread]
         static void Main()
         {
-            using (var game = new Mono())
+            using (var game = new Pong())
                 game.Run();
         }
     }
+#endif
 }
