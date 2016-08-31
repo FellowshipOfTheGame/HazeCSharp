@@ -5,34 +5,56 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Pong_Tutorial
 {
+    public enum PlayerTypes
+    {
+        Human,
+        CPU
+    }
+
     public class Paddle : Sprite
     {
-        private readonly Rectangle screenBounds;
+        private readonly PlayerTypes playerType;
 
-        public Paddle(Texture2D texture, Vector2 Location, Rectangle screenBounds) : base(texture, Location)
+        public Paddle(Texture2D texture, Vector2 location, Rectangle screenBounds, PlayerTypes playerType) 
+            : base(texture, location, screenBounds)
         {
-            this.screenBounds = screenBounds;
+            this.playerType = playerType;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, GameObjects gameObjects)
         {
-            if(Keyboard.GetState().IsKeyDown(Keys.Left))
+            if(playerType == PlayerTypes.CPU)
             {
-                //Move paddle up
-                Velocity = new Vector2(0, -0.5f);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                //Move paddle down
-                Velocity = new Vector2(0, 0.5f);
-            }
-            base.Update(gameTime);
+                var random = new Random();
+                var reactionThreshold = random.Next(30, 130);
 
+                //CPU movement
+                if(gameObjects.Ball.Location.Y + gameObjects.Ball.Height < Location.Y + reactionThreshold)
+                    Velocity = new Vector2(0, -0.5f);
+                if(gameObjects.Ball.Location.Y > Location.Y + Height + reactionThreshold)
+                    Velocity = new Vector2(0, 0.5f);
+            }
+            if (playerType == PlayerTypes.Human)
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                {
+                    //Move paddle up
+                    Velocity = new Vector2(0, -10.2f);
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                {
+                    //Move paddle down
+                    Velocity = new Vector2(0, 10.2f);
+                    Console.WriteLine("Is going Down");
+                }
+            }
+            base.Update(gameTime, gameObjects);
         }
 
         protected override void CheckBounds()
         {
-            Location.Y = MathHelper.Clamp(Location.Y, 0, screenBounds.Height - texture.Height);
+            Console.WriteLine("Height: "+ gameBoundaries.Height + "Text Heigth: "+texture.Height);
+            Location.Y = MathHelper.Clamp(Location.Y, 0, gameBoundaries.Height - texture.Height);
         }
     }
 }

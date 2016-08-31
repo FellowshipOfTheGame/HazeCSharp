@@ -12,8 +12,11 @@ namespace Pong_Tutorial
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        private Paddle paddle;
+        private GameObjects gameObjects;
+        private Paddle CPUPaddle;
+        private Paddle playerPaddle;
         private Ball ball;
+        private Score score;
         //private Texture2D paddle;
 
         public Pong()
@@ -33,6 +36,11 @@ namespace Pong_Tutorial
             // TODO: Add your initialization logic here
             IsMouseVisible = true;
 
+            graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
+            graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
+            graphics.IsFullScreen = true;
+            graphics.ApplyChanges();
+
             base.Initialize();
         }
 
@@ -45,10 +53,20 @@ namespace Pong_Tutorial
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            
+            var paddleTexture = Content.Load<Texture2D>("Pong_Pad");
+            var PlayerPaddlePos = new Vector2(0, 100);
+            var gameBoundaries = new Rectangle(0, 0, GraphicsDevice.DisplayMode.Width, GraphicsDevice.DisplayMode.Height);
+            var CPUPaddlePos = new Vector2(gameBoundaries.Width - paddleTexture.Width, 0);
             // TODO: use this.Content to load your game content here
-            paddle = new Paddle(Content.Load<Texture2D>("Pong_Pad"), Vector2.Zero, new Rectangle(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height));
-            ball = new Ball(Content.Load<Texture2D>("Ball"), Vector2.Zero);
-            ball.AttachTo(paddle);
+            playerPaddle = new Paddle(paddleTexture, PlayerPaddlePos, gameBoundaries, PlayerTypes.Human);
+            CPUPaddle = new Paddle(paddleTexture, CPUPaddlePos, gameBoundaries, PlayerTypes.CPU);
+            ball = new Ball(Content.Load<Texture2D>("Ball"), Vector2.Zero, gameBoundaries);
+            ball.AttachTo(playerPaddle);
+
+            score = new Score(Content.Load<SpriteFont>("GameFont"), gameBoundaries);
+
+            gameObjects = new GameObjects { PlayerPaddle = playerPaddle, CPUPaddle = CPUPaddle, Ball = ball, Score = score};
         }
 
         /// <summary>
@@ -71,8 +89,10 @@ namespace Pong_Tutorial
                 Exit();
 
             // TODO: Add your update logic here
-            paddle.Update(gameTime);
-            ball.Update(gameTime);
+            playerPaddle.Update(gameTime, gameObjects);
+            CPUPaddle.Update(gameTime, gameObjects);
+            ball.Update(gameTime, gameObjects);
+            score.Update(gameTime, gameObjects);
             base.Update(gameTime);
         }
 
@@ -86,8 +106,10 @@ namespace Pong_Tutorial
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            paddle.Draw(spriteBatch);
+            playerPaddle.Draw(spriteBatch);
+            CPUPaddle.Draw(spriteBatch);
             ball.Draw(spriteBatch);
+            score.Draw(spriteBatch);
             //spriteBatch.Draw(paddle, Vector2.Zero, Color.White);
             spriteBatch.End();
 
